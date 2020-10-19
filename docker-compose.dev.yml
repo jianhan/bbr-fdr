@@ -1,0 +1,38 @@
+version: "3.5"
+services:
+
+  nats:
+    image: 'nats:latest'
+    hostname: nats-server
+    expose:
+      - "4222"
+    ports:
+      - "8222:8222"
+    networks: ["nats"]
+
+  nats-webui:
+    image: 'sphqxe/nats-webui:latest'
+    hostname: nats-webui
+    ports:
+      - "8221:80"
+    networks: ["nats"]
+
+  mongodb:
+    image: mongo
+    container_name: mongodb
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: password
+      MONGO_INITDB_DATABASE: bbr-fdr
+    ports:
+      - 27017:27017
+    volumes:
+      - ./mongodb-volumn:/data/db
+    restart: always
+
+networks:
+  nats:
+    name: nats
+
+volumes:
+  mongodb_data_container:
