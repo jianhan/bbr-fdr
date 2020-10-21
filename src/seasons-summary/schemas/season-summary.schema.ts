@@ -10,7 +10,7 @@ export class SeasonSummary {
   @Prop({ required: true, min: 2000, max: (new Date()).getFullYear() })
   year: number;
 
-  @Prop({type: LinkSchema})
+  @Prop({type: Link})
   leagueChampion: Link;
 
   // League Champion: Toronto Raptors

@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { SeasonsFeederService } from './seasons-feeder.service';
+import { SeasonsSummaryService } from './seasons-feeder.service';
 import { getModelToken } from '@nestjs/mongoose';
 import { SeasonSummary } from './schemas/season-summary.schema';
 import { ConfigModule } from '@nestjs/config';
@@ -15,20 +15,20 @@ describe('SeasonsFeederService', () => {
     };
   };
 
-  let service: SeasonsFeederService;
+  let service: SeasonsSummaryService;
 
   beforeEach(async () => {
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [
-        SeasonsFeederService,
+        SeasonsSummaryService,
         { provide: getModelToken(SeasonSummary.name), useValue: mockedSeasonSummaryModel },
         { provide: WINSTON_MODULE_PROVIDER, useValue: console },
       ],
       imports: [ConfigModule]
     }).compile();
 
-    service = module.get<SeasonsFeederService>(SeasonsFeederService);
+    service = module.get<SeasonsSummaryService>(SeasonsSummaryService);
   });
 
   it('should be defined', () => {

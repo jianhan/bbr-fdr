@@ -1,5 +1,5 @@
-import { Link } from '../schemas/link.schema';
 import { IsNotEmpty, IsNumber, IsOptional, Max, Min } from 'class-validator';
+import { Link } from '../../common/dto/link';
 
 export class CreateSeasonSummaryDto {
 

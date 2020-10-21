@@ -10,10 +10,10 @@ import { SeasonSummary, SeasonSummaryDocument, SeasonSummarySchema } from './sch
 import { Model } from 'mongoose';
 import { CreateSeasonSummaryDto } from './dto/create-season-summary.dto';
 import { InjectModel } from '@nestjs/mongoose';
-import { Link } from './schemas/link.schema';
+import { Link } from '../common/dto/link';
 
 @Injectable()
-export class SeasonsFeederService {
+export class SeasonsSummaryService {
 
   constructor(
     @InjectModel(SeasonSummary.name) private seasonSummaryModel: Model<SeasonSummaryDocument>,
@@ -25,10 +25,7 @@ export class SeasonsFeederService {
   async createSummary(createSeasonSummaryDto: CreateSeasonSummaryDto): Promise<SeasonSummary> {
     const testDTO = new CreateSeasonSummaryDto();
     testDTO.year = 2019;
-    const link = new Link();
-    link.url = 'http://google.com.au';
-    link.title = 'test';
-    testDTO.leagueChampion = link;
+    testDTO.leagueChampion = new Link('test', '/test.com');
     const createdSeasonSummary = new this.seasonSummaryModel(testDTO);
     return createdSeasonSummary.save();
   }

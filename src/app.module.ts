@@ -1,13 +1,14 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { SeasonsFeederModule } from './seasons-feeder/seasons-feeder.module';
 import { ConfigModule } from '@nestjs/config';
 import * as Joi from '@hapi/joi';
 import { ScheduleModule } from '@nestjs/schedule';
 import configuration from './config/configuration';
 import { WinstonModule } from 'nest-winston';
-import {MongooseModule} from '@nestjs/mongoose';
+import { MongooseModule } from '@nestjs/mongoose';
+import { CommonModule } from './common/common.module';
+import { SeasonsSummaryModule } from './seasons-summary/seasons-summary.module';
 
 @Module({
   imports: [
@@ -15,7 +16,7 @@ import {MongooseModule} from '@nestjs/mongoose';
       // options
     }),
     MongooseModule.forRoot('mongodb://root:password@172.19.0.2/bbr-fdr'),
-    SeasonsFeederModule,
+    SeasonsSummaryModule,
     ScheduleModule.forRoot(),
     ConfigModule.forRoot({
       load: [configuration],
@@ -26,6 +27,7 @@ import {MongooseModule} from '@nestjs/mongoose';
       }),
       isGlobal: true,
     }),
+    CommonModule,
   ],
   controllers: [AppController],
   providers: [AppService],

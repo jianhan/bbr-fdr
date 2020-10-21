@@ -1,15 +1,15 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { SeasonsFeederController } from './seasons-feeder.controller';
+import { SeasonsSummaryController } from './seasons-feeder.controller';
 
 describe('SeasonsFeederController', () => {
-  let controller: SeasonsFeederController;
+  let controller: SeasonsSummaryController;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      controllers: [SeasonsFeederController],
+      controllers: [SeasonsSummaryController],
     }).compile();
 
-    controller = module.get<SeasonsFeederController>(SeasonsFeederController);
+    controller = module.get<SeasonsSummaryController>(SeasonsSummaryController);
   });
 
   it('should be defined', () => {
