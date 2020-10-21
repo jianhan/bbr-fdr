@@ -22,6 +22,12 @@ export class SeasonsSummaryService {
   ) { }
 
   @Cron(CronExpression.EVERY_5_SECONDS)
+  async syncByYear(year: number = new Date().getFullYear()): Promise<void> {
+    console.log(year)
+    const createSummaryDto = new CreateSeasonSummaryDto();
+    createSummaryDto.year = year;
+  }
+
   async createSummary(createSeasonSummaryDto: CreateSeasonSummaryDto): Promise<SeasonSummary> {
     const testDTO = new CreateSeasonSummaryDto();
     testDTO.year = 2019;

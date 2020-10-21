@@ -2,6 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { Transport, MicroserviceOptions } from '@nestjs/microservices';
 import { AppModule } from './app.module';
 import { ConfigService } from '@nestjs/config';
+import { ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
   // TODO: fix: create a dummy app to get configurations only
@@ -18,6 +19,9 @@ async function bootstrap() {
       }
     },
   );
+
+  // setup pipes
+  app.useGlobalPipes(new ValidationPipe());
 
   app.listen(() => console.log('Microservice is listening'));
 }

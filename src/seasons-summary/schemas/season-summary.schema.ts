@@ -4,28 +4,35 @@ import { Link, LinkSchema } from './link.schema';
 
 export type SeasonSummaryDocument = SeasonSummary & Document;
 
-@Schema({ collection: 'season-summaries' })
+@Schema({ collection: 'season-summaries', timestamps: true })
 export class SeasonSummary {
 
   @Prop({ required: true, min: 2000, max: (new Date()).getFullYear() })
   year: number;
 
-  @Prop({type: Link})
+  @Prop({ type: Link })
   leagueChampion: Link;
 
-  // League Champion: Toronto Raptors
-  //
-  // Most Valuable Player: Giannis Antetokounmpo (27.7/12.5/5.9)
-  //
-  // Rookie of the Year: Luka Dončić (21.2/7.8/6.0)
-  //
-  // PPG Leader: James Harden (36.1)
-  //
-  // RPG Leader: Andre Drummond (15.6)
-  //
-  // APG Leader: Russell Westbrook (10.7)
-  //
-  // WS Leader: James Harden (15.2)
+  @Prop({ type: Link })
+  mostValuablePlayer: Link;
+
+  @Prop({ type: Link })
+  rookieOfTheYear: Link;
+
+  @Prop({ type: Link })
+  ppgLeader: Link;
+
+  @Prop({ type: Link })
+  rpgLeader: Link;
+
+  @Prop({ type: Link })
+  apgLeader: Link;
+
+  @Prop({ type: Link })
+  wsLeader: Link;
+
+  @Prop({ type: Date, required: true, default: new Date() })
+  lastSyncedAt: Date;
 }
 
 export const SeasonSummarySchema = SchemaFactory.createForClass(SeasonSummary);
