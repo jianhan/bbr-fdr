@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
-import { Link, LinkSchema } from './link.schema';
+import { Link } from './link.schema';
 
 export type SeasonSummaryDocument = SeasonSummary & Document;
 
@@ -31,8 +31,11 @@ export class SeasonSummary {
   @Prop({ type: Link })
   wsLeader: Link;
 
-  @Prop({ type: Date, required: true, default: new Date() })
+  @Prop({ type: Date, required: true })
   lastSyncedAt: Date;
+
+  @Prop({ type: String, required: true })
+  rawHtml: string;
 }
 
 export const SeasonSummarySchema = SchemaFactory.createForClass(SeasonSummary);

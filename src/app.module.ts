@@ -31,6 +31,10 @@ import { SeasonsSummaryModule } from './seasons-summary/seasons-summary.module';
         MONGODB_HOST: Joi.string().default('localhost'),
         MONGODB_PORT: Joi.number().default(27017),
         MONGODB_DATABASE: Joi.string().default('bbr-fdr'),
+
+        // application level configurations
+        CURRENT_SEASONS_SUMMARY_CACHE_DURATION: Joi.number().default(10),
+
       }),
       isGlobal: true,
     }),
@@ -45,15 +49,16 @@ import { SeasonsSummaryModule } from './seasons-summary/seasons-summary.module';
           const port = configService.get<number>('MONGODB_PORT');
           const database = configService.get<string>('MONGODB_DATABASE');
           return {
-            uri: `mongodb://${username}:${password}@${host}:${port}/${database}`
-          }
+            uri: `mongodb://${username}:${password}@${host}:${port}/${database}`,
+          };
         },
-        inject: [ConfigService]
-      }
+        inject: [ConfigService],
+      },
     ),
   ],
   controllers: [AppController],
   providers: [AppService],
 })
+
 export class AppModule {
 }

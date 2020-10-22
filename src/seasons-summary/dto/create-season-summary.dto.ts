@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsNumber, IsOptional, Max, Min } from 'class-validator';
+import { IsDate, IsNotEmpty, IsNumber, IsOptional, IsString, Max, Min } from 'class-validator';
 import { Link } from '../../common/dto/link';
 
 export class CreateSeasonSummaryDto {
@@ -17,4 +17,23 @@ export class CreateSeasonSummaryDto {
 
   @IsOptional()
   rookieOfTheYear: Link;
+
+  @IsOptional()
+  ppgLeader: Link;
+
+  @IsOptional()
+  rpgLeader: Link;
+
+  @IsOptional()
+  apgLeader: Link;
+
+  @IsOptional()
+  wsLeader: Link;
+
+  @IsNotEmpty()
+  @IsDate()
+  lastSyncedAt: Date;
+
+  @IsNotEmpty()
+  rawHtml: string;
 }
