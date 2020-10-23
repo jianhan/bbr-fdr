@@ -10,6 +10,7 @@ import { SeasonSummary, SeasonSummaryDocument } from './schemas/season-summary.s
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { canSyncSummaryByYear, extractSummaryHtml, fetchSummaryHtml, generateSummaryURL } from './functions';
+import fp from 'lodash/fp';
 
 @Injectable()
 export class SeasonsSummaryService {
@@ -23,13 +24,13 @@ export class SeasonsSummaryService {
 
   @Cron(CronExpression.EVERY_5_SECONDS)
   async syncByYear(year: number = new Date().getFullYear()): Promise<void> {
-    from(this.seasonSummaryModel.findOne({ year: 2019 }).exec()).pipe(
+    from(this.seasonSummaryModel.findOne({ year: 2020 }).exec()).pipe(
       mergeMap((seasonSummary: SeasonSummary) => {
         const cacheDuration = this.configService.get<number>('CURRENT_SEASONS_SUMMARY_CACHE_DURATION');
         if (canSyncSummaryByYear(year, cacheDuration, seasonSummary)) {
           const domainURL = this.configService.get<string>('domainURL');
           const summaryURL = generateSummaryURL(domainURL, year);
-          return fetchSummaryHtml(summaryURL).pipe(map(extractSummaryHtml));
+          return fetchSummaryHtml(summaryURL).pipe(map(fp.curry(extractSummaryHtml)(year)));
         }
         return of('no data');
       }),

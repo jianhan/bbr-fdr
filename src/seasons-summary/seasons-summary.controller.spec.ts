@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { SeasonsSummaryController } from './seasons-feeder.controller';
+import { SeasonsSummaryController } from './seasons-summary.controller';
 
 describe('SeasonsFeederController', () => {
   let controller: SeasonsSummaryController;
