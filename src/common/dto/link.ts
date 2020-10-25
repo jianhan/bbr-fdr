@@ -15,6 +15,8 @@ export class Link {
   constructor(title: string, href: string, data = '') {
     this.title = title;
     this.href = href;
-    this.data = data;
+    if (data !== '') {
+      this.data = data;
+    }
   }
 }

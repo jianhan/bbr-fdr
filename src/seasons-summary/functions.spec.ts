@@ -1,7 +1,9 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { extractSummaryHtml } from './functions';
+import { extractStandings, generateSeasonSummaryDto } from './functions';
 import { Link } from '../common/dto/link';
+import * as cheerio from 'cheerio';
+import { StandingRegion, StandingType } from './schemas/standing';
 
 describe('test functions', () => {
 
@@ -10,7 +12,7 @@ describe('test functions', () => {
     it('should extract create summary DTO from html page', () => {
       const year = 2020;
       const summary2020Html = fs.readFileSync(path.join(__dirname, '__tests__', 'summary_2020.html')).toString();
-      const createSeasonSummaryDTO = extractSummaryHtml(year, summary2020Html);
+      const createSeasonSummaryDTO = generateSeasonSummaryDto(year, summary2020Html);
 
       expect(createSeasonSummaryDTO.rawHtml).toEqual(summary2020Html);
       expect(createSeasonSummaryDTO.year).toEqual(year);
@@ -21,6 +23,16 @@ describe('test functions', () => {
       expect(createSeasonSummaryDTO.rpgLeader).toEqual(new Link('Andre Drummond', '/players/d/drumman01.html', '15.2'));
       expect(createSeasonSummaryDTO.apgLeader).toEqual(new Link('LeBron James', '/players/j/jamesle01.html', '10.2'));
       expect(createSeasonSummaryDTO.wsLeader).toEqual(new Link('James Harden', '/players/h/hardeja01.html', '13.1'));
+    });
+
+  });
+
+  describe('extractStandings', () => {
+
+    it('should extract standings data', () => {
+      const summary2020Html = fs.readFileSync(path.join(__dirname, '__tests__', 'summary_2020.html')).toString();
+      const $ = cheerio.load(summary2020Html);
+      const actual = extractStandings($, 'confs_standings_E > tbody > tr', StandingType.Conference, StandingRegion.East);
     });
 
   });

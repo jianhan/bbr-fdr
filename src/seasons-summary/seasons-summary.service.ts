@@ -8,9 +8,9 @@ import { from, of } from 'rxjs';
 import { map, mergeMap } from 'rxjs/operators';
 import { SeasonSummary, SeasonSummaryDocument } from './schemas/season-summary.schema';
 import { Model } from 'mongoose';
+import * as cheerio from 'cheerio';
 import { InjectModel } from '@nestjs/mongoose';
-import { canSyncSummaryByYear, extractSummaryHtml, fetchSummaryHtml, generateSummaryURL } from './functions';
-import fp from 'lodash/fp';
+import { canSyncSummaryByYear, generateSeasonSummaryDto, fetchSummaryHtml, generateSummaryURL } from './functions';
 
 @Injectable()
 export class SeasonsSummaryService {
@@ -30,8 +30,13 @@ export class SeasonsSummaryService {
         if (canSyncSummaryByYear(year, cacheDuration, seasonSummary)) {
           const domainURL = this.configService.get<string>('domainURL');
           const summaryURL = generateSummaryURL(domainURL, year);
-          return fetchSummaryHtml(summaryURL).pipe(map(fp.curry(extractSummaryHtml)(year)));
+          return fetchSummaryHtml(summaryURL).pipe(
+            map(html => cheerio.load(html)),
+            map($ => generateSeasonSummaryDto($, year)),
+            mergeMap(dto => new this.seasonSummaryModel(dto).save())
+          );
         }
+
         return of('no data');
       }),
     ).subscribe(v => console.log(v));

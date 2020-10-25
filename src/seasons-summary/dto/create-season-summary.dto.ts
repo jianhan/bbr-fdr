@@ -1,11 +1,13 @@
-import { IsDate, IsNotEmpty, IsNumber, IsOptional, IsString, Max, Min } from 'class-validator';
+import { IsDate, IsNotEmpty, IsNumber, IsOptional, Max, Min } from 'class-validator';
 import { Link } from '../../common/dto/link';
+import { MAX_SUMMARY_YEAR, MIN_SUMMARY_YEAR } from '../constants';
 
 export class CreateSeasonSummaryDto {
 
   @IsNumber()
   @IsNotEmpty()
-  @Min(2000)
+  @Min(MIN_SUMMARY_YEAR)
+  @Max(MAX_SUMMARY_YEAR)
   @Max(new Date().getFullYear())
   year: number;
 
@@ -32,7 +34,7 @@ export class CreateSeasonSummaryDto {
 
   @IsNotEmpty()
   @IsDate()
-  lastSyncedAt: Date;
+  lastSyncedAt: Date = new Date();
 
   @IsNotEmpty()
   rawHtml: string;

@@ -1,13 +1,14 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
-import { Link } from './link.schema';
+import { Link } from '../../common/schemas/link';
+import { MAX_SUMMARY_YEAR, MIN_SUMMARY_YEAR } from '../constants';
 
 export type SeasonSummaryDocument = SeasonSummary & Document;
 
 @Schema({ collection: 'season-summaries', timestamps: true })
 export class SeasonSummary {
 
-  @Prop({ required: true, min: 2000, max: (new Date()).getFullYear() })
+  @Prop({ required: true, min: MIN_SUMMARY_YEAR, max: MAX_SUMMARY_YEAR })
   year: number;
 
   @Prop({ type: Link })
