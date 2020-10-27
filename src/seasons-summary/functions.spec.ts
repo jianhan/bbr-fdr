@@ -3,7 +3,7 @@ import * as path from 'path';
 import { extractStandings, generateSeasonSummaryDto } from './functions';
 import { Link } from '../common/dto/link';
 import * as cheerio from 'cheerio';
-import { StandingRegion, StandingType } from './schemas/standing';
+import { StandingRegion, StandingType } from './schemas/season-summary-standing';
 
 describe('test functions', () => {
 
@@ -12,9 +12,8 @@ describe('test functions', () => {
     it('should extract create summary DTO from html page', () => {
       const year = 2020;
       const summary2020Html = fs.readFileSync(path.join(__dirname, '__tests__', 'summary_2020.html')).toString();
-      const createSeasonSummaryDTO = generateSeasonSummaryDto(year, summary2020Html);
+      const createSeasonSummaryDTO = generateSeasonSummaryDto(cheerio.load(summary2020Html), year);
 
-      expect(createSeasonSummaryDTO.rawHtml).toEqual(summary2020Html);
       expect(createSeasonSummaryDTO.year).toEqual(year);
       expect(createSeasonSummaryDTO.leagueChampion).toEqual(new Link('Los Angeles Lakers', '/teams/LAL/2020.html'));
       expect(createSeasonSummaryDTO.mostValuablePlayer).toEqual(new Link('Giannis Antetokounmpo', '/players/a/antetgi01.html', '29.5/13.6/5.6'));

@@ -8,7 +8,11 @@ import * as cheerio from 'cheerio';
 import { Link } from '../common/schemas/link';
 import { StandingRecord } from './schemas/standing-record';
 import Root = cheerio.Root;
-import { SeasonSummaryStanding, StandingRegion, StandingType } from './schemas/season-summary-standing';
+import {
+  SeasonSummaryStanding,
+  StandingRegion,
+  StandingType,
+} from './schemas/season-summary-standing.schema';
 
 /**
  * canSyncSummaryByYear checks if summary can be synced.
@@ -23,7 +27,6 @@ export const canSyncSummaryByYear = (yearOfSummary: number, cacheDuration: numbe
   }
 
   const currentYear = new Date().getFullYear();
-  console.log('currentYear', currentYear)
   if (currentYear !== yearOfSummary) {
     return false;
   }
@@ -140,6 +143,6 @@ export const extractStandings = ($: Root, selector: string, type: StandingType, 
 
     return standingRecord;
   });
-
+  standing.lastSyncedAt = new Date();
   return standing;
 };

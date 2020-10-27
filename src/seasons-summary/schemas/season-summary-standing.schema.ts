@@ -1,6 +1,9 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { StandingRecord } from './standing-record';
 import { MAX_SUMMARY_YEAR, MIN_SUMMARY_YEAR } from '../constants';
+import { Document } from "mongoose";
+
+export type SeasonSummaryStandingDocument = SeasonSummaryStanding & Document;
 
 export enum StandingType {
   Conference = 'Conference',
