@@ -15,6 +15,7 @@ import { SeasonSummaryStanding, SeasonSummaryStandingDocument } from './schemas/
 import { RequestCacheService } from '../common/request-cache.service';
 import * as fp from 'lodash/fp';
 import { RequestCacheMethod } from '../common/schemas/request-cache.schema';
+import { isEmpty } from 'class-validator';
 
 @Injectable()
 export class SeasonsSummaryService {
@@ -30,7 +31,6 @@ export class SeasonsSummaryService {
 
   @Cron(CronExpression.EVERY_5_SECONDS)
   async syncSeasonSummaryStandings(year: number = new Date().getFullYear()): Promise<void> {
-
     return this.requestCache.request(axios.get, 'https://www.google.com', RequestCacheMethod.GET, ((response: AxiosResponse) => response.data))
     // axios.get()
     // const tt = (a, b) => a + b;

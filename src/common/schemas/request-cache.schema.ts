@@ -18,13 +18,20 @@ export class RequestCache {
   @Prop({ required: true })
   method: RequestCacheMethod;
 
-  @Prop({ required: true, validate: isDate, default: new Date() })
+  @Prop({ required: true, default: new Date() })
   cachedAt: Date;
 
   @Prop({ required: true })
   response: string;
 
-  @Prop({ default: null })
+  @Prop({ default: null,
+    validate: {
+      validator: function (value: RequestCache) {
+        return isEmpty(value) || value > this.cachedAt
+      },
+      message: 'expired at must be after cached at date',
+    },
+  })
   expiredAt?: Date;
 }
 
