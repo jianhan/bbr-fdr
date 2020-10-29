@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
-import { isDate, isEmpty, isURL } from 'class-validator';
+import { isEmpty, isURL } from 'class-validator';
 
 type RequestCacheDocument = RequestCache & Document;
 

@@ -29,36 +29,34 @@ export class SeasonsSummaryService {
   ) {
   }
 
+
+  // async syncSeasonSummaryStandings(year: number = new Date().getFullYear()): Promise<void> {
+  //   return this.requestCache.request(axios.get, 'https://www.google.com', RequestCacheMethod.GET, ((response: AxiosResponse) => response.data));
+  // }
+
   @Cron(CronExpression.EVERY_5_SECONDS)
-  async syncSeasonSummaryStandings(year: number = new Date().getFullYear()): Promise<void> {
-    return this.requestCache.request(axios.get, 'https://www.google.com', RequestCacheMethod.GET, ((response: AxiosResponse) => response.data))
-    // axios.get()
-    // const tt = (a, b) => a + b;
-    // const t1 = fp.curry(tt)(1)(2);
-    // console.log(t1())
-    // console.log(this.requestCache, "***")
+  async syncSeasonSummaries(year: number = new Date().getFullYear()): Promise<string> {
+
+    return this.seasonSummaryModel.findOne({ year }).exec().then((seasonSummary: SeasonSummary) => {
+      const cacheDuration = this.configService.get<number>('CURRENT_SEASONS_SUMMARY_CACHE_DURATION');
+      if (canSyncSummaryByYear(year, cacheDuration, seasonSummary)) {
+        const domainURL = this.configService.get<string>('domainURL');
+        const summaryURL = generateSummaryURL(domainURL, year);
+
+        return this.requestCache.request(
+          axios.get,
+          summaryURL,
+          RequestCacheMethod.GET,
+          (response: AxiosResponse) => response.data,
+          60 * 60 * 24).then((html: string) => {
+          const $ = cheerio.load(html);
+          const dto = generateSeasonSummaryDto($, year);
+          return new this.seasonSummaryModel(dto).save();
+        }).then((document: SeasonSummaryDocument) => `syncing successful for season ${document.year} summary`);
+      }
+
+      return 'unable to sync at the moment'
+    });
   }
 
-  syncSeasonSummaries(year: number = new Date().getFullYear()): Observable<string> {
-    return from(this.seasonSummaryModel.findOne({ year }).exec()).pipe(
-      mergeMap((seasonSummary: SeasonSummary) => {
-        const cacheDuration = this.configService.get<number>('CURRENT_SEASONS_SUMMARY_CACHE_DURATION');
-
-        if (canSyncSummaryByYear(year, cacheDuration, seasonSummary)) {
-          const domainURL = this.configService.get<string>('domainURL');
-          const summaryURL = generateSummaryURL(domainURL, year);
-
-          return fetchSummaryHtml(summaryURL).pipe(
-            map(html => cheerio.load(html)),
-            map($ => generateSeasonSummaryDto($, year)),
-            mergeMap(dto => new this.seasonSummaryModel(dto).save()),
-            map((document: SeasonSummaryDocument) => `syncing successful for season ${document.year} summary`),
-          );
-        }
-
-        return of('unable to sync at the moment');
-      }),
-    );
-
-  }
 }
