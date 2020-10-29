@@ -50,6 +50,7 @@ import { SeasonsSummaryModule } from './seasons-summary/seasons-summary.module';
           const database = configService.get<string>('MONGODB_DATABASE');
           return {
             uri: `mongodb://${username}:${password}@${host}:${port}/${database}`,
+            useFindAndModify: true
           };
         },
         inject: [ConfigService],

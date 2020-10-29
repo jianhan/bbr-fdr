@@ -3,10 +3,10 @@ import { Document } from 'mongoose';
 import { Link } from '../../common/schemas/link';
 import { MAX_SUMMARY_YEAR, MIN_SUMMARY_YEAR } from '../constants';
 
-export type SeasonSummaryDocument = SeasonSummary & Document;
+type SeasonSummaryDocument = SeasonSummary & Document;
 
 @Schema({ collection: 'season-summaries', timestamps: true })
-export class SeasonSummary {
+class SeasonSummary {
 
   @Prop({ required: true, min: MIN_SUMMARY_YEAR, max: MAX_SUMMARY_YEAR })
   year: number;
@@ -39,4 +39,8 @@ export class SeasonSummary {
   rawHtml: string;
 }
 
-export const SeasonSummarySchema = SchemaFactory.createForClass(SeasonSummary);
+const SeasonSummarySchema = SchemaFactory.createForClass(SeasonSummary);
+SeasonSummarySchema.index({ year: 1 }, { unique: true });
+
+export {SeasonSummaryDocument, SeasonSummary, SeasonSummarySchema}
+

@@ -3,6 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { RequestCache, RequestCacheDocument, RequestCacheMethod } from './schemas/request-cache.schema';
 import { Model } from 'mongoose';
 import * as moment from 'moment';
+import fp from 'lodash/fp';
 
 @Injectable()
 export class RequestCacheService {
@@ -19,7 +20,6 @@ export class RequestCacheService {
       if (document !== null) {
         return document.response;
       }
-
       return func(url).then(r => {
         return this.requestCacheModel.findOneAndUpdate({
             url,
@@ -29,7 +29,7 @@ export class RequestCacheService {
             expiredAt: moment().add(cacheInSeconds, 'seconds').toDate(),
             response: extractor(r),
             cachedAt: new Date(),
-          }, { new: true, upsert: true }).then(extractor);
+          }, { new: true, upsert: true }).then(fp.prop('response'));
       });
     });
   }

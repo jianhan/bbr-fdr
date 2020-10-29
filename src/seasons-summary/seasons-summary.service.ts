@@ -29,13 +29,8 @@ export class SeasonsSummaryService {
   ) {
   }
 
-
-  // async syncSeasonSummaryStandings(year: number = new Date().getFullYear()): Promise<void> {
-  //   return this.requestCache.request(axios.get, 'https://www.google.com', RequestCacheMethod.GET, ((response: AxiosResponse) => response.data));
-  // }
-
   @Cron(CronExpression.EVERY_5_SECONDS)
-  async syncSeasonSummaries(year: number = new Date().getFullYear()): Promise<string> {
+  async syncSeasonSummaries(year = 2016): Promise<string> {
 
     return this.seasonSummaryModel.findOne({ year }).exec().then((seasonSummary: SeasonSummary) => {
       const cacheDuration = this.configService.get<number>('CURRENT_SEASONS_SUMMARY_CACHE_DURATION');
