@@ -27,10 +27,11 @@ export class SeasonsSummaryService {
   ) {
   }
 
-  @Cron(CronExpression.EVERY_10_SECONDS)
+  @Cron(CronExpression.EVERY_MINUTE)
   async syncSeasonSummaries(): Promise<string> {
+
     const existingSeasonSummary = await this.seasonSummaryModel.find({}).exec();
-    const existingYears = existingSeasonSummary.map(fp.prop('year'))
+    const existingYears = existingSeasonSummary.map(fp.prop('year')).sort()
 
     const maxSeasonYear = this.configService.get<number>('maxSeasonYear');
     let minSeasonYear = this.configService.get<number>('minSeasonYear');
@@ -41,12 +42,19 @@ export class SeasonsSummaryService {
       minSeasonYear++;
     }
 
-    const year = allYears.filter(v => !_.includes(existingYears, v)).pop();
-    if (year === undefined) {
-      return 'nothing to sync'
+    let year: number;
+    if (_.isEqual(allYears, existingYears)) {
+      this.logger.debug(`all summaries has been synced, set year to max year: ${maxSeasonYear}`)
+      year = maxSeasonYear;
+    } else {
+      year = allYears.filter(v => !_.includes(existingYears, v)).pop()
+      if (year === undefined) {
+        this.logger.debug('nothing to sync');
+        return 'nothing to sync'
+      }
     }
 
-    console.log('start syncing year')
+    this.logger.debug(`start syncing ${year}`);
 
     return this.seasonSummaryModel.findOne({ year }).exec().then((seasonSummary: SeasonSummary) => {
       const cacheDuration = this.configService.get<number>('CURRENT_SEASONS_SUMMARY_CACHE_DURATION');
