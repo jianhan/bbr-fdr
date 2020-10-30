@@ -3,7 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { RequestCache, RequestCacheDocument, RequestCacheMethod } from './schemas/request-cache.schema';
 import { Model } from 'mongoose';
 import * as moment from 'moment';
-import fp from 'lodash/fp';
+import * as fp from 'lodash/fp';
 
 @Injectable()
 export class RequestCacheService {

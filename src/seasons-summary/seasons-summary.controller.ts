@@ -7,7 +7,6 @@ export class SeasonsSummaryController {
 
     @EventPattern('fetch_summary')
     async handleFetchSummary(data: Record<string, unknown>) {
-        console.log('test')
     }
 
 }

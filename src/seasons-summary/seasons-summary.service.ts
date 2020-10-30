@@ -3,19 +3,17 @@ import { Cron, CronExpression } from '@nestjs/schedule';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { Logger } from 'winston';
 import { ConfigService } from '@nestjs/config';
-import { from, Observable, of } from 'rxjs';
-import { map, mergeMap } from 'rxjs/operators';
 import { SeasonSummary, SeasonSummaryDocument } from './schemas/season-summary.schema';
 import { Model } from 'mongoose';
 import * as cheerio from 'cheerio';
 import axios, { AxiosResponse } from 'axios';
 import { InjectModel } from '@nestjs/mongoose';
-import { canSyncSummaryByYear, fetchSummaryHtml, generateSeasonSummaryDto, generateSummaryURL } from './functions';
+import { canSyncSummaryByYear, generateSeasonSummaryDto, generateSummaryURL } from './functions';
 import { SeasonSummaryStanding, SeasonSummaryStandingDocument } from './schemas/season-summary-standing.schema';
 import { RequestCacheService } from '../common/request-cache.service';
-import * as fp from 'lodash/fp';
 import { RequestCacheMethod } from '../common/schemas/request-cache.schema';
-import { isEmpty } from 'class-validator';
+import * as fp from 'lodash/fp';
+import * as _ from 'lodash';
 
 @Injectable()
 export class SeasonsSummaryService {
@@ -29,8 +27,26 @@ export class SeasonsSummaryService {
   ) {
   }
 
-  @Cron(CronExpression.EVERY_5_SECONDS)
-  async syncSeasonSummaries(year = 2016): Promise<string> {
+  @Cron(CronExpression.EVERY_10_SECONDS)
+  async syncSeasonSummaries(): Promise<string> {
+    const existingSeasonSummary = await this.seasonSummaryModel.find({}).exec();
+    const existingYears = existingSeasonSummary.map(fp.prop('year'))
+
+    const maxSeasonYear = this.configService.get<number>('maxSeasonYear');
+    let minSeasonYear = this.configService.get<number>('minSeasonYear');
+
+    const allYears = [];
+    while (minSeasonYear <= maxSeasonYear) {
+      allYears.push(minSeasonYear);
+      minSeasonYear++;
+    }
+
+    const year = allYears.filter(v => !_.includes(existingYears, v)).pop();
+    if (year === undefined) {
+      return 'nothing to sync'
+    }
+
+    console.log('start syncing year')
 
     return this.seasonSummaryModel.findOne({ year }).exec().then((seasonSummary: SeasonSummary) => {
       const cacheDuration = this.configService.get<number>('CURRENT_SEASONS_SUMMARY_CACHE_DURATION');
@@ -50,7 +66,7 @@ export class SeasonsSummaryService {
         }).then((document: SeasonSummaryDocument) => `syncing successful for season ${document.year} summary`);
       }
 
-      return 'unable to sync at the moment'
+      return 'unable to sync at the moment';
     });
   }
 
