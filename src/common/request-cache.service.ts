@@ -23,7 +23,7 @@ export class RequestCacheService {
       method,
       $or: [{ expiredAt: null }, { expiredAt: { $gt: new Date() } }],
     }).exec().then((document: RequestCacheDocument) => {
-      this.logger.debug(`request func called with url: ${url}, cached document is [${document}]`);
+      this.logger.debug(`request func called with url: ${url}`);
       if (document !== null) {
         this.logger.debug(`cached response for url: ${url} has been found and returned`);
         return document.response;

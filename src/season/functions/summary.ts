@@ -1,6 +1,7 @@
 import { Link } from '../../common/schemas/link';
 import { stringInBrackets } from '../../common/functions';
 import Root = cheerio.Root;
+import configuration from '../../config/configuration';
 
 export const extractSummary = ($: Root, year: number): { [key: string]: string | Link | number } => {
   const returnVal = { year };
@@ -34,3 +35,5 @@ export const extractSegment = ($: Root, selector: string): Link | null => {
 
   return null;
 };
+
+export const cacheDuration = (year: number) => year === new Date().getFullYear() ? configuration().currentSeasonCacheDurationInSeconds : configuration().pageCacheDurationInSeconds;

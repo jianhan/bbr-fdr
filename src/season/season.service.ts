@@ -13,7 +13,7 @@ import { generateSummaryURL, headOrMax, range } from '../common/functions';
 import { RequestCacheMethod } from '../common/schemas/request-cache.schema';
 import axios from 'axios';
 import * as cheerio from 'cheerio';
-import { extractSummary } from './functions/summary';
+import { cacheDuration, extractSummary } from './functions/summary';
 
 @Injectable()
 export class SeasonService {
@@ -40,7 +40,9 @@ export class SeasonService {
         axios.get,
         generateSummaryURL(year),
         RequestCacheMethod.GET,
-        fp.prop('data')).then((html: string) => new this.summaryModel(extractSummary(cheerio.load(html), year)).save()))
+        fp.prop('data'),
+        cacheDuration(year)).then((html: string) => this.summaryModel.findOneAndUpdate({ year }, extractSummary(cheerio.load(html), year), { new: true, upsert: true })
+      ))
       .then((r: Summary) => `successfully synced summary year ${r.year}`);
   }
 }
