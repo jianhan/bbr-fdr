@@ -28,7 +28,7 @@ export class StandingRecord {
   pointsPerGame: number;
 
   @Prop()
-  opponentPointsPerGame: number;
+  opponentPointsPerGame?: number;
 
   @Prop()
   simpleRatingSystem: number;

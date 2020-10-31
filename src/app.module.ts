@@ -8,14 +8,13 @@ import configuration from './config/configuration';
 import { WinstonModule } from 'nest-winston';
 import { MongooseModule } from '@nestjs/mongoose';
 import { CommonModule } from './common/common.module';
-import { SeasonsSummaryModule } from './seasons-summary/seasons-summary.module';
+import { SeasonModule } from './season/season.module';
 
 @Module({
   imports: [
     WinstonModule.forRoot({
       // options
     }),
-    SeasonsSummaryModule,
     ScheduleModule.forRoot(),
     ConfigModule.forRoot({
       load: [configuration],
@@ -56,6 +55,7 @@ import { SeasonsSummaryModule } from './seasons-summary/seasons-summary.module';
         inject: [ConfigService],
       },
     ),
+    SeasonModule,
   ],
   controllers: [AppController],
   providers: [AppService],

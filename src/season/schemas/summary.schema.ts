@@ -1,14 +1,14 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 import { Link } from '../../common/schemas/link';
-import { MAX_SUMMARY_YEAR, MIN_SUMMARY_YEAR } from '../constants';
+import configuration from '../../config/configuration';
 
-type SeasonSummaryDocument = SeasonSummary & Document;
+type SummaryDocument = Summary & Document;
 
-@Schema({ collection: 'season-summaries', timestamps: true })
-class SeasonSummary {
+@Schema({ collection: 'summaries', timestamps: true })
+class Summary {
 
-  @Prop({ required: true, min: MIN_SUMMARY_YEAR, max: MAX_SUMMARY_YEAR })
+  @Prop({ required: true, min: configuration()['minSeasonYear'], max: configuration()['maxSeasonYear'] })
   year: number;
 
   @Prop({ type: Link })
@@ -34,13 +34,9 @@ class SeasonSummary {
 
   @Prop({ type: Date, required: true })
   lastSyncedAt: Date;
-
-  @Prop({ type: String, required: true })
-  rawHtml: string;
 }
 
-const SeasonSummarySchema = SchemaFactory.createForClass(SeasonSummary);
-SeasonSummarySchema.index({ year: 1 }, { unique: true });
+const SummarySchema = SchemaFactory.createForClass(Summary);
+SummarySchema.index({ year: 1 }, { unique: true });
 
-export {SeasonSummaryDocument, SeasonSummary, SeasonSummarySchema}
-
+export { SummaryDocument, Summary, SummarySchema };
