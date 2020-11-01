@@ -9,18 +9,13 @@ import { Summary, SummaryDocument } from './schemas/summary.schema';
 import { Standing, StandingDocument } from './schemas/standing.schema';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import * as fp from 'lodash/fp';
-import { extractYears, generateSummaryURL, headOrMax, notIn, range } from '../common/functions';
-import { RequestCacheMethod } from '../common/schemas/request-cache.schema';
-import axios from 'axios';
-import * as cheerio from 'cheerio';
+import { extractYears, range } from '../common/functions';
 import {
-  cacheDuration,
-  extractSummary,
   fetchSummaryWithCache,
   findOneSummaryAndUpdate,
   findYearToSync,
 } from './functions/summary';
-import { extractStandings, findOneStandingAndUpdate } from './functions/standing';
+import { findOneStandingAndUpdate } from './functions/standing';
 
 @Injectable()
 export class SeasonService {

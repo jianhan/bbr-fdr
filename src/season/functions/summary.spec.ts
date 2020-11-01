@@ -3,7 +3,6 @@ import * as path from 'path';
 import * as cheerio from 'cheerio';
 import { extractSummary, findYearToSync } from './summary';
 import { Link } from '../../common/schemas/link';
-import { notIn } from '../../common/functions';
 
 describe('summary', () => {
 

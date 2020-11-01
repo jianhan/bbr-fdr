@@ -1,5 +1,5 @@
 import { Link } from '../../common/schemas/link';
-import { extractYears, generateSummaryURL, headOrMax, notIn, stringInBrackets } from '../../common/functions';
+import { generateSummaryURL, headOrMax, notIn, stringInBrackets } from '../../common/functions';
 import Root = cheerio.Root;
 import configuration from '../../config/configuration';
 import * as fp from 'lodash/fp';
@@ -8,9 +8,7 @@ import axios from 'axios';
 import { RequestCacheMethod } from '../../common/schemas/request-cache.schema';
 import { YearAndHtml } from '../types';
 import { Model } from 'mongoose';
-import { StandingDocument } from '../schemas/standing.schema';
 import * as cheerio from 'cheerio';
-import { extractStandings } from './standing';
 import { SummaryDocument } from '../schemas/summary.schema';
 
 export const extractSummary = ($: Root, year: number): { [key: string]: string | Link | number } => {
