@@ -2,7 +2,10 @@ import * as _ from 'lodash';
 import { Link } from '../../common/schemas/link';
 import Root = cheerio.Root;
 import { StandingRecord } from '../schemas/standing-record';
-import { Standing } from '../schemas/standing.schema';
+import { Standing, StandingDocument } from '../schemas/standing.schema';
+import { YearAndHtml } from '../types';
+import { Model } from "mongoose";
+import * as cheerio from "cheerio";
 
 const extractStandingRecords = ($: Root, tableRowsSelector: string): StandingRecord[] => $(`#${tableRowsSelector}`).toArray().map(trEl => {
   const standingRecord = new StandingRecord();
@@ -71,3 +74,5 @@ export const extractStandings = ($: Root, year: number) => {
   standing.lastSyncedAt = new Date();
   return standing;
 };
+
+export const findOneStandingAndUpdate = (standingModel: Model<StandingDocument>, yah: YearAndHtml) => standingModel.findOneAndUpdate({ year: yah.year }, extractStandings(cheerio.load(yah.html), yah.year), { new: true, upsert: true })

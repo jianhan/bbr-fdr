@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import * as cheerio from 'cheerio';
-import { extractSummary } from './summary';
+import { extractSummary, findYearToSync } from './summary';
 import { Link } from '../../common/schemas/link';
 
 describe('summary', () => {
@@ -31,13 +31,15 @@ describe('summary', () => {
 
   });
 
-  // describe('extractStandings', () => {
-  //
-  //   it('should extract standings data', () => {
-  //     const summary2020Html = fs.readFileSync(path.join(__dirname, '__tests__', 'summary_2020.html')).toString();
-  //     const $ = cheerio.load(summary2020Html);
-  //   });
-  //
-  // });
+  describe('findYearToSync', () => {
+
+    it('should find year', () => {
+
+      const allYears = [2000, 2001, 2002, 2003];
+      const actual = findYearToSync(allYears)([2000, 2001, 2003]);
+      expect(actual).toBe(2002);
+    });
+
+  });
 
 });

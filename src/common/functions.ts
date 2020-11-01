@@ -1,6 +1,7 @@
 import * as moment from 'moment';
 import configuration from '../config/configuration';
 import * as _ from 'lodash';
+import * as fp from 'lodash/fp';
 
 export const dateDiff = (start: Date, end: Date): moment.Duration => moment.duration(moment(start).diff(moment(end)));
 
@@ -33,3 +34,15 @@ export const range = (min: number, max: number): number[] => {
 };
 
 export const headOrMax = (inputArr: number[]) => (output: number[]) => _.size(output) > 0 ? _.head(output) : _.max(inputArr);
+
+export const extractYears = objs => {
+  const years = [];
+  objs.forEach(v => {
+    if (_.has(v, 'year')) {
+      years.push(v.year);
+    }
+  });
+  return years;
+};
+
+export const notIn = target => source => _.difference(source, target);

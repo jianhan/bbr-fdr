@@ -9,12 +9,18 @@ import { Summary, SummaryDocument } from './schemas/summary.schema';
 import { Standing, StandingDocument } from './schemas/standing.schema';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import * as fp from 'lodash/fp';
-import { generateSummaryURL, headOrMax, range } from '../common/functions';
+import { extractYears, generateSummaryURL, headOrMax, notIn, range } from '../common/functions';
 import { RequestCacheMethod } from '../common/schemas/request-cache.schema';
 import axios from 'axios';
 import * as cheerio from 'cheerio';
-import { cacheDuration, extractSummary } from './functions/summary';
-import { extractStandings } from './functions/standing';
+import {
+  cacheDuration,
+  extractSummary,
+  fetchSummaryWithCache,
+  findOneSummaryAndUpdate,
+  findYearToSync,
+} from './functions/summary';
+import { extractStandings, findOneStandingAndUpdate } from './functions/standing';
 
 @Injectable()
 export class SeasonService {
@@ -30,47 +36,24 @@ export class SeasonService {
 
   private allYears = (): number[] => range(this.configService.get<number>('minSeasonYear'), this.configService.get<number>('maxSeasonYear'));
 
-  @Cron(CronExpression.EVERY_5_SECONDS)
-  async syncStandings(): Promise<string> {
+  async syncCacheWrapper<T>(findOneAndUpdateFunc): Promise<T>  {
     const allYears = this.allYears();
+    const fetchSummary = fp.curry(fetchSummaryWithCache)(this.requestCache);
+
     return this.standingModel.find()
       .sort({ year: 1 })
       .exec()
-      .then(fp.map(fp.prop('year')))
-      .then(fp.curry(fp.difference)(allYears))
-      .then(headOrMax(allYears))
-      .then((year: number) => this.requestCache.request(
-        axios.get,
-        generateSummaryURL(year),
-        RequestCacheMethod.GET,
-        fp.prop('data'),
-        cacheDuration(year)).then((html: string) => this.standingModel.findOneAndUpdate({ year }, extractStandings(cheerio.load(html), year), {
-          new: true,
-          upsert: true,
-        }),
-      ))
-      .then((r: Standing) => `successfully synced standing for summary of year ${r.year}`);
+      .then(findYearToSync(allYears))
+      .then(fetchSummary)
+      .then(findOneAndUpdateFunc)
   }
 
-  @Cron(CronExpression.EVERY_5_MINUTES)
+  async syncStandings(): Promise<string> {
+      return this.syncCacheWrapper<Standing>(fp.curry(findOneStandingAndUpdate)(this.standingModel)).then((r: Standing) => `successfully synced standing for summary of year ${r.year}`);
+  }
+
+  @Cron(CronExpression.EVERY_5_SECONDS)
   async syncSummaries(): Promise<string> {
-    const allYears = this.allYears();
-    return this.summaryModel.find()
-      .sort({ year: 1 })
-      .exec()
-      .then(fp.map(fp.prop('year')))
-      .then(fp.curry(fp.difference)(allYears))
-      .then(headOrMax(allYears))
-      .then((year: number) => this.requestCache.request(
-        axios.get,
-        generateSummaryURL(year),
-        RequestCacheMethod.GET,
-        fp.prop('data'),
-        cacheDuration(year)).then((html: string) => this.summaryModel.findOneAndUpdate({ year }, extractSummary(cheerio.load(html), year), {
-          new: true,
-          upsert: true,
-        }),
-      ))
-      .then((r: Summary) => `successfully synced summary year ${r.year}`);
+    return this.syncCacheWrapper<Standing>(fp.curry(findOneSummaryAndUpdate)(this.summaryModel)).then((r: Standing) => `successfully synced summary of year ${r.year}`);
   }
 }

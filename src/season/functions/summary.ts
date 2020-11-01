@@ -1,7 +1,17 @@
 import { Link } from '../../common/schemas/link';
-import { stringInBrackets } from '../../common/functions';
+import { extractYears, generateSummaryURL, headOrMax, notIn, stringInBrackets } from '../../common/functions';
 import Root = cheerio.Root;
 import configuration from '../../config/configuration';
+import * as fp from 'lodash/fp';
+import { RequestCacheService } from '../../common/request-cache.service';
+import axios from 'axios';
+import { RequestCacheMethod } from '../../common/schemas/request-cache.schema';
+import { YearAndHtml } from '../types';
+import { Model } from "mongoose";
+import { StandingDocument } from '../schemas/standing.schema';
+import * as cheerio from "cheerio";
+import { extractStandings } from './standing';
+import { SummaryDocument } from '../schemas/summary.schema';
 
 export const extractSummary = ($: Root, year: number): { [key: string]: string | Link | number } => {
   const returnVal = { year };
@@ -37,3 +47,9 @@ export const extractSegment = ($: Root, selector: string): Link | null => {
 };
 
 export const cacheDuration = (year: number) => year === new Date().getFullYear() ? configuration().currentSeasonCacheDurationInSeconds : configuration().pageCacheDurationInSeconds;
+
+export const findYearToSync = (allYears: number[]) => fp.pipe(notIn(allYears), headOrMax(allYears));
+
+export const fetchSummaryWithCache = (requestCache: RequestCacheService, year: number): Promise<YearAndHtml> => requestCache.request(axios.get, generateSummaryURL(year), RequestCacheMethod.GET, fp.prop('data'), cacheDuration(year)).then(html => ({year, html}));
+
+export const findOneSummaryAndUpdate = (summaryModel: Model<SummaryDocument>, yah: YearAndHtml) => summaryModel.findOneAndUpdate({ year: yah.year }, extractSummary(cheerio.load(yah.html), yah.year), { new: true, upsert: true})
