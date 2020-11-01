@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { DocumentQuery, Model } from 'mongoose';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { Logger } from 'winston';
 import { RequestCacheService } from '../common/request-cache.service';
@@ -34,26 +34,31 @@ export class SeasonService {
   ) {
   }
 
-  private allYears = (): number[] => range(this.configService.get<number>('minSeasonYear'), this.configService.get<number>('maxSeasonYear'));
-
-  async syncCacheWrapper<T>(findOneAndUpdateFunc): Promise<T>  {
+  async syncCacheWrapper<T>(queryResults: Promise<T[]>, findOneAndUpdateFunc): Promise<T> {
     const allYears = this.allYears();
     const fetchSummary = fp.curry(fetchSummaryWithCache)(this.requestCache);
 
-    return this.standingModel.find()
-      .sort({ year: 1 })
-      .exec()
+    return queryResults
+      .then(extractYears)
       .then(findYearToSync(allYears))
       .then(fetchSummary)
-      .then(findOneAndUpdateFunc)
+      .then(findOneAndUpdateFunc);
   }
 
   async syncStandings(): Promise<string> {
-      return this.syncCacheWrapper<Standing>(fp.curry(findOneStandingAndUpdate)(this.standingModel)).then((r: Standing) => `successfully synced standing for summary of year ${r.year}`);
+    return this.syncCacheWrapper<Standing>(
+      this.standingModel.find().sort({ year: 1 }).exec(),
+      fp.curry(findOneStandingAndUpdate)(this.standingModel)
+    ).then((r: Standing) => `successfully synced standing for summary of year ${r.year}`);
   }
 
   @Cron(CronExpression.EVERY_5_SECONDS)
   async syncSummaries(): Promise<string> {
-    return this.syncCacheWrapper<Standing>(fp.curry(findOneSummaryAndUpdate)(this.summaryModel)).then((r: Standing) => `successfully synced summary of year ${r.year}`);
+    return this.syncCacheWrapper<Summary>(
+      this.summaryModel.find().sort({ year: 1 }).exec(),
+      fp.curry(findOneSummaryAndUpdate)(this.summaryModel),
+    ).then((r: Summary) => `successfully synced summary of year ${r.year}`);
   }
+
+  private allYears = (): number[] => range(this.configService.get<number>('minSeasonYear'), this.configService.get<number>('maxSeasonYear'));
 }

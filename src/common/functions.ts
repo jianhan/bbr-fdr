@@ -38,11 +38,12 @@ export const headOrMax = (inputArr: number[]) => (output: number[]) => _.size(ou
 export const extractYears = objs => {
   const years = [];
   objs.forEach(v => {
-    if (_.has(v, 'year')) {
+    const year = v.year
+    if (year !== undefined) {
       years.push(v.year);
     }
   });
   return years;
 };
 
-export const notIn = target => source => _.difference(source, target);
+export const notIn = source => target => _.difference(source, target);

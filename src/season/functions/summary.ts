@@ -7,9 +7,9 @@ import { RequestCacheService } from '../../common/request-cache.service';
 import axios from 'axios';
 import { RequestCacheMethod } from '../../common/schemas/request-cache.schema';
 import { YearAndHtml } from '../types';
-import { Model } from "mongoose";
+import { Model } from 'mongoose';
 import { StandingDocument } from '../schemas/standing.schema';
-import * as cheerio from "cheerio";
+import * as cheerio from 'cheerio';
 import { extractStandings } from './standing';
 import { SummaryDocument } from '../schemas/summary.schema';
 
@@ -50,6 +50,12 @@ export const cacheDuration = (year: number) => year === new Date().getFullYear()
 
 export const findYearToSync = (allYears: number[]) => fp.pipe(notIn(allYears), headOrMax(allYears));
 
-export const fetchSummaryWithCache = (requestCache: RequestCacheService, year: number): Promise<YearAndHtml> => requestCache.request(axios.get, generateSummaryURL(year), RequestCacheMethod.GET, fp.prop('data'), cacheDuration(year)).then(html => ({year, html}));
+export const fetchSummaryWithCache = (requestCache: RequestCacheService, year: number): Promise<YearAndHtml> => requestCache.request(axios.get, generateSummaryURL(year), RequestCacheMethod.GET, fp.prop('data'), cacheDuration(year)).then(html => ({
+  year,
+  html,
+}));
 
-export const findOneSummaryAndUpdate = (summaryModel: Model<SummaryDocument>, yah: YearAndHtml) => summaryModel.findOneAndUpdate({ year: yah.year }, extractSummary(cheerio.load(yah.html), yah.year), { new: true, upsert: true})
+export const findOneSummaryAndUpdate = (summaryModel: Model<SummaryDocument>, yah: YearAndHtml) => summaryModel.findOneAndUpdate({ year: yah.year }, extractSummary(cheerio.load(yah.html), yah.year), {
+  new: true,
+  upsert: true,
+});
