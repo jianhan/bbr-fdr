@@ -55,5 +55,9 @@ export class SeasonService {
     ).then((r: Summary) => `successfully synced summary of year ${r.year}`);
   }
 
+  async syncPlayoffSeries(): Promise<string> {
+    return 'test';
+  }
+
   private allYears = (): number[] => range(this.configService.get<number>('minSeasonYear'), this.configService.get<number>('maxSeasonYear'));
 }
