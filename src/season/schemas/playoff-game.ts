@@ -1,5 +1,5 @@
 import { Link } from '../../common/schemas/link';
-import { Prop } from '@nestjs/mongoose';
+import { Prop, raw } from '@nestjs/mongoose';
 
 export class PlayoffGame {
 
@@ -9,16 +9,15 @@ export class PlayoffGame {
   @Prop({ required: true })
   date: Date;
 
-  @Prop({ required: true })
+  @Prop(raw({
+    name: {type: String},
+    score: {type: Number}
+  }))
   homeTeam: string;
 
-  @Prop({ required: true })
+  @Prop(raw({
+    name: {type: String},
+    score: {type: Number}
+  }))
   awayTeam: string;
-
-  @Prop({ required: true })
-  homeTeamPoints: number;
-
-  @Prop({ required: true })
-  awayTeamPoints: number;
-
 }

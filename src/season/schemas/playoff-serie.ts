@@ -8,13 +8,13 @@ export class PlayoffSerie {
   name: string;
 
   @Prop(raw({
-    teamName: {type: Link},
+    name: {type: Link},
     score: {type: Number}
   }))
   winTeam: Record<string, any>;
 
   @Prop(raw({
-    teamName: {type: Link},
+    name: {type: Link},
     score: {type: Number}
   }))
   loseTeam: Record<string, any>;
