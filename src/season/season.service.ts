@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { DocumentQuery, Model } from 'mongoose';
+import { Model } from 'mongoose';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { Logger } from 'winston';
 import { RequestCacheService } from '../common/request-cache.service';
@@ -9,13 +9,12 @@ import { Summary, SummaryDocument } from './schemas/summary.schema';
 import { Standing, StandingDocument } from './schemas/standing.schema';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import * as fp from 'lodash/fp';
-import { extractYears, range } from '../common/functions';
-import {
-  fetchSummaryWithCache,
-  findOneSummaryAndUpdate,
-  findYearToSync,
-} from './functions/summary';
+import { extractYears, generateSummaryURL, range } from '../common/functions';
+import { fetchSummaryWithCache, findOneSummaryAndUpdate, findYearToSync } from './functions/summary';
 import { findOneStandingAndUpdate } from './functions/standing';
+import { fetchPlayoffHtml } from './functions/playoff';
+import { RequestCacheMethod } from '../common/schemas/request-cache.schema';
+import * as fs from 'fs';
 
 @Injectable()
 export class SeasonService {
@@ -43,11 +42,10 @@ export class SeasonService {
   async syncStandings(): Promise<string> {
     return this.syncCacheWrapper<Standing>(
       this.standingModel.find().sort({ year: 1 }).exec(),
-      fp.curry(findOneStandingAndUpdate)(this.standingModel)
+      fp.curry(findOneStandingAndUpdate)(this.standingModel),
     ).then((r: Standing) => `successfully synced standing for summary of year ${r.year}`);
   }
 
-  @Cron(CronExpression.EVERY_5_SECONDS)
   async syncSummaries(): Promise<string> {
     return this.syncCacheWrapper<Summary>(
       this.summaryModel.find().sort({ year: 1 }).exec(),
@@ -55,8 +53,13 @@ export class SeasonService {
     ).then((r: Summary) => `successfully synced summary of year ${r.year}`);
   }
 
+  @Cron(CronExpression.EVERY_5_SECONDS)
   async syncPlayoffSeries(): Promise<string> {
-    return 'test';
+    const url = generateSummaryURL(2000);
+    const html = await this.requestCache.request(fetchPlayoffHtml, url, RequestCacheMethod.GET, fp.identity, 10);
+    fs.writeFileSync('/tmp/playoff_2000.html', html);
+    console.log("******")
+    return html;
   }
 
   private allYears = (): number[] => range(this.configService.get<number>('minSeasonYear'), this.configService.get<number>('maxSeasonYear'));

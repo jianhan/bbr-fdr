@@ -75,4 +75,4 @@ export const extractStandings = ($: Root, year: number) => {
   return standing;
 };
 
-export const findOneStandingAndUpdate = (standingModel: Model<StandingDocument>, yah: YearAndHtml) => standingModel.findOneAndUpdate({ year: yah.year }, extractStandings(cheerio.load(yah.html), yah.year), { new: true, upsert: true })
+export const findOneStandingAndUpdate = (standingModel: Model<StandingDocument>, yah: YearAndHtml) => standingModel.findOneAndUpdate({ year: yah.year }, extractStandings(cheerio.load(yah.html), yah.year), { new: true, upsert: true });
