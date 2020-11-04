@@ -1,5 +1,6 @@
 import { Prop, raw } from '@nestjs/mongoose';
 import { Link } from '../../common/schemas/link';
+import { PlayoffGame } from './playoff-game';
 
 export class PlayoffSerie {
 
@@ -10,16 +11,19 @@ export class PlayoffSerie {
     teamName: {type: Link},
     score: {type: Number}
   }))
-  firstTeam: Record<string, any>;
+  winTeam: Record<string, any>;
 
   @Prop(raw({
     teamName: {type: Link},
     score: {type: Number}
   }))
-  secondTeam: Record<string, any>;
+  loseTeam: Record<string, any>;
 
   @Prop({ required: true })
   status: Link;
+
+  @Prop({required: true})
+  games: PlayoffGame[];
 
   @Prop({ required: true })
   lastSyncedAt: Date;
