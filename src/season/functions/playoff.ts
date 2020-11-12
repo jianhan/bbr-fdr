@@ -5,6 +5,7 @@ import * as _ from 'lodash';
 import { Link } from '../../common/schemas/link';
 import { PlayoffSerie } from '../schemas/playoff-serie';
 import { PlayoffGame } from '../schemas/playoff-game';
+import { Playoff } from '../schemas/playoff.schema';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const puppeteer = require('puppeteer');
@@ -80,7 +81,15 @@ const extractSerieGames = ($: Root, el: Element): PlayoffGame[] => $(el).find('t
   };
 });
 
-export const extractPlayoffSeries = ($: Root) => $('table#all_playoffs > tbody > tr.toggleable').map((i, el: Element): any => {
+export const extractPlayoff = ($: Root, year: number): Playoff => {
+  return {
+    year: year,
+    series: extractPlayoffSeries($),
+    lastSyncedAt: new Date(),
+  }
+};
+
+export const extractPlayoffSeries = ($: Root): PlayoffSerie[] => $('table#all_playoffs > tbody > tr.toggleable').toArray().map((el: Element): any => {
   const playOffSerie = extractSerie($, $(el).prev('tr'));
   playOffSerie.games = extractSerieGames($, el);
   return playOffSerie;
