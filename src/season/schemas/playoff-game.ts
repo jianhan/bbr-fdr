@@ -7,17 +7,18 @@ export class PlayoffGame {
   game: Link;
 
   @Prop({ required: true })
-  date: Date;
+  date: string;
 
   @Prop(raw({
     name: {type: String},
     score: {type: Number}
   }))
-  homeTeam: string;
+  homeTeam: Record<string, any>;
 
   @Prop(raw({
     name: {type: String},
     score: {type: Number}
   }))
-  awayTeam: string;
+  awayTeam: Record<string, any>;
+
 }

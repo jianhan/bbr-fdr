@@ -24,7 +24,4 @@ export class PlayoffSerie {
 
   @Prop({required: true})
   games: PlayoffGame[];
-
-  @Prop({ required: true })
-  lastSyncedAt: Date;
 }

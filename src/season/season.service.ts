@@ -14,7 +14,6 @@ import { fetchSummaryWithCache, findOneSummaryAndUpdate, findYearToSync } from '
 import { findOneStandingAndUpdate } from './functions/standing';
 import { fetchPlayoffHtml } from './functions/playoff';
 import { RequestCacheMethod } from '../common/schemas/request-cache.schema';
-import * as fs from 'fs';
 
 @Injectable()
 export class SeasonService {
@@ -57,8 +56,6 @@ export class SeasonService {
   async syncPlayoffSeries(): Promise<string> {
     const url = generateSummaryURL(2000);
     const html = await this.requestCache.request(fetchPlayoffHtml, url, RequestCacheMethod.GET, fp.identity, 10);
-    fs.writeFileSync('/tmp/playoff_2000.html', html);
-    console.log("******")
     return html;
   }
 
