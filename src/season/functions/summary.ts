@@ -48,7 +48,7 @@ export const cacheDuration = (year: number) => year === new Date().getFullYear()
 
 export const findYearToSync = (allYears: number[]) => fp.pipe(notIn(allYears), headOrMax(allYears));
 
-export const fetchSummaryWithCache = (requestCache: RequestCacheService, year: number): Promise<YearAndHtml> => requestCache.request(axios.get, generateSummaryURL(year), RequestCacheMethod.GET, fp.prop('data'), cacheDuration(year)).then(html => ({
+export const fetchSummaryWithCache = (requestCache: RequestCacheService, httpRequestFunc, year: number): Promise<YearAndHtml> => requestCache.request(httpRequestFunc, generateSummaryURL(year), RequestCacheMethod.GET, fp.prop('data'), cacheDuration(year)).then(html => ({
   year,
   html,
 }));
