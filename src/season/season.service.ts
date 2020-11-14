@@ -42,6 +42,7 @@ export class SeasonService {
       .then(findOneAndUpdateFunc);
   }
 
+  @Cron(CronExpression.EVERY_10_MINUTES)
   async syncStandings(): Promise<string> {
     return this.syncCacheWrapper<Standing>(
       this.standingModel.find().sort({ year: 1 }).exec(),
@@ -49,6 +50,7 @@ export class SeasonService {
     ).then((r: Standing) => `successfully synced standing for summary of year ${r.year}`);
   }
 
+  @Cron(CronExpression.EVERY_5_MINUTES)
   async syncSummaries(): Promise<string> {
     return this.syncCacheWrapper<Summary>(
       this.summaryModel.find().sort({ year: 1 }).exec(),
@@ -56,7 +58,7 @@ export class SeasonService {
     ).then((r: Summary) => `successfully synced summary of year ${r.year}`);
   }
 
-  @Cron(CronExpression.EVERY_10_SECONDS)
+  @Cron(CronExpression.EVERY_MINUTE)
   async syncPlayoffSeries(): Promise<string> {
     return this.syncCacheWrapper<Playoff>(
       this.playoffModel.find().sort({ year: 1 }).exec(),
