@@ -1,10 +1,9 @@
 import { Link } from '../../common/schemas/link';
-import { generateSummaryURL, headOrMax, notIn, stringInBrackets } from '../../common/functions';
+import { generateSummaryURL, headOrMax, notIn, simpleFetch, stringInBrackets } from '../../common/functions';
 import Root = cheerio.Root;
 import configuration from '../../config/configuration';
 import * as fp from 'lodash/fp';
 import { RequestCacheService } from '../../common/request-cache.service';
-import axios from 'axios';
 import { RequestCacheMethod } from '../../common/schemas/request-cache.schema';
 import { YearAndHtml } from '../types';
 import { Model } from 'mongoose';
@@ -48,7 +47,7 @@ export const cacheDuration = (year: number) => year === new Date().getFullYear()
 
 export const findYearToSync = (allYears: number[]) => fp.pipe(notIn(allYears), headOrMax(allYears));
 
-export const fetchSummaryWithCache = (requestCache: RequestCacheService, httpRequestFunc, year: number): Promise<YearAndHtml> => requestCache.request(httpRequestFunc, generateSummaryURL(year), RequestCacheMethod.GET, fp.prop('data'), cacheDuration(year)).then(html => ({
+export const fetchSummaryWithCache = (requestCache: RequestCacheService, requestFunc: simpleFetch, year: number): Promise<YearAndHtml> => requestCache.request(requestFunc, generateSummaryURL(year), RequestCacheMethod.GET, cacheDuration(year)).then(html => ({
   year,
   html,
 }));

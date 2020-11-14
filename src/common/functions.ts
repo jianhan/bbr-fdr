@@ -1,7 +1,11 @@
 import * as moment from 'moment';
 import configuration from '../config/configuration';
 import * as _ from 'lodash';
-import * as fp from 'lodash/fp';
+import axios, { AxiosResponse } from 'axios';
+
+export type simpleFetch = (url: string) => Promise<string>;
+
+export const simpleAxiosRequest: simpleFetch = (url: string) => axios.get(url).then((r: AxiosResponse) => r.data);
 
 export const dateDiff = (start: Date, end: Date): moment.Duration => moment.duration(moment(start).diff(moment(end)));
 

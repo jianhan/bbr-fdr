@@ -7,6 +7,7 @@ import * as fp from 'lodash/fp';
 import configuration from '../config/configuration';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { Logger } from 'winston';
+import { simpleFetch } from './functions';
 
 @Injectable()
 export class RequestCacheService {
@@ -17,7 +18,7 @@ export class RequestCacheService {
   ) {
   }
 
-  async request(func, url: string, method: RequestCacheMethod, extractor, cacheInSeconds = configuration().pageCacheDurationInSeconds): Promise<string> {
+  async request(func: simpleFetch, url: string, method: RequestCacheMethod, cacheInSeconds = configuration().pageCacheDurationInSeconds): Promise<string> {
     return this.requestCacheModel.findOne({
       url,
       method,
@@ -37,7 +38,7 @@ export class RequestCacheService {
           },
           {
             expiredAt: moment().add(cacheInSeconds, 'seconds').toDate(),
-            response: extractor(r),
+            response: r,
             cachedAt: new Date(),
           }, { new: true, upsert: true }).then(fp.prop('response'));
       });
