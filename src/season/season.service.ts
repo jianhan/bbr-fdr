@@ -9,14 +9,11 @@ import { Summary, SummaryDocument } from './schemas/summary.schema';
 import { Standing, StandingDocument } from './schemas/standing.schema';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import * as fp from 'lodash/fp';
-import { extractYears, generateSummaryURL, range, simpleAxiosRequest } from '../common/functions';
+import { extractYears, range } from '../common/functions';
 import { fetchSummaryWithCache, findOneSummaryAndUpdate, findYearToSync } from './functions/summary';
 import { findOneStandingAndUpdate } from './functions/standing';
-import { extractPlayoff, fetchPlayoffHtml, findOnePlayoffAndUpdate } from './functions/playoff';
-import { RequestCacheMethod } from '../common/schemas/request-cache.schema';
-import * as cheerio from 'cheerio';
+import { fetchPlayoffHtml, findOnePlayoffAndUpdate } from './functions/playoff';
 import { Playoff, PlayoffDocument } from './schemas/playoff.schema';
-import axios from 'axios';
 
 @Injectable()
 export class SeasonService {

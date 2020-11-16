@@ -9,6 +9,7 @@ import { WinstonModule } from 'nest-winston';
 import { MongooseModule } from '@nestjs/mongoose';
 import { CommonModule } from './common/common.module';
 import { SeasonModule } from './season/season.module';
+import { GameModule } from './game/game.module';
 
 @Module({
   imports: [
@@ -56,6 +57,7 @@ import { SeasonModule } from './season/season.module';
       },
     ),
     SeasonModule,
+    GameModule,
   ],
   controllers: [AppController],
   providers: [AppService],
