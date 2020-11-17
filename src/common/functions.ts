@@ -3,6 +3,7 @@ import configuration from '../config/configuration';
 import * as _ from 'lodash';
 import axios, { AxiosResponse } from 'axios';
 import Root = cheerio.Root;
+import * as cheerio from 'cheerio';
 import * as S from 'sanctuary';
 import Cheerio = cheerio.Cheerio;
 import validator from 'validator';
@@ -63,3 +64,5 @@ export const cheerioSelect = (selector: string) => ($: Root): Cheerio => $(selec
 export const lengthNotEqualTo = (expectedLength: number) => x => _.size(x) !== expectedLength;
 
 export const validateUrl = S.ifElse(validator.isURL)(S.Right)((s: string) => S.Left(new Error(`"${s}" is not a valid url`)));
+
+export const htmlToCheerioRoot = (html: string): Root => cheerio.load(html);

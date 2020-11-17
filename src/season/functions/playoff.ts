@@ -7,10 +7,8 @@ import { PlayoffSerie } from '../schemas/playoff-serie';
 import { PlayoffGame } from '../schemas/playoff-game';
 import { Playoff, PlayoffDocument } from '../schemas/playoff.schema';
 import { Model } from "mongoose";
-import { StandingDocument } from '../schemas/standing.schema';
 import { YearAndHtml } from '../types';
 import * as cheerio from "cheerio";
-import { extractStandings } from './standing';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const puppeteer = require('puppeteer');
