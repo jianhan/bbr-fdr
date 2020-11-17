@@ -4,7 +4,7 @@ import * as path from 'path';
 import * as cheerio from 'cheerio';
 import * as moment from 'moment';
 import * as fp from 'lodash/fp';
-import { filterFunc } from '../../common/functions';
+import * as S from 'sanctuary';
 
 describe('test game functions', () => {
 

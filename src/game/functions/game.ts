@@ -20,9 +20,9 @@ export const extractMonthHrefs = (filterFunc: filterFunc) => S.pipe([
   S.map((filterDiv: Cheerio) => filterDiv.find('div > a').toArray().map((e: Element) => e.attribs['href'])),
   S.map(filterFunc),
   S.chain(S.ifElse(fp.isEmpty)(fp.constant(S.Left('empty hrefs, unable to proceed')))(S.Right)),
-  S.either(fp.identity)(fp.identity)
 ]);
 
+export const extractGamesByMonthHref = (href: string) => {
 
-// return ;
-// S.map((filterDiv: Cheerio) => filterDiv.find('div > a').toArray().map(e => $(e).attr('href'))
+};
+
